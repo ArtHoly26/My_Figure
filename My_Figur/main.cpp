@@ -1,4 +1,4 @@
-#include <Windows.h>
+ï»¿#include <Windows.h>
 #include <iostream>
 #include <conio.h>
 
@@ -15,8 +15,8 @@ namespace Geometry
 		virtual void draw()const = 0;
 		virtual void info()const
 		{
-			cout << "Ïëîùàäü ôèãóðû: " << get_area() << endl;
-			cout << "Ïåðèìåòð ôèãóðû: " << get_perimeter() << endl;
+			cout << "ÐŸÐ»Ð¾Ñ‰Ð°Ð´ÑŒ Ñ„Ð¸Ð³ÑƒÑ€Ñ‹: " << get_area() << endl;
+			cout << "ÐŸÐµÑ€Ð¸Ð¼ÐµÑ‚Ñ€ Ñ„Ð¸Ð³ÑƒÑ€Ñ‹: " << get_perimeter() << endl;
 			draw();
 		}
 	};
@@ -59,8 +59,8 @@ namespace Geometry
 		void info()const
 		{
 			cout << typeid(*this).name() << endl;
-			cout << "Äëèííà ñòîðîíû: " << get_side() << endl;
-			cout << "Äèàãîíàëü: " << get_diagonal() << endl;
+			cout << "Ð”Ð»Ð¸Ð½Ð½Ð° ÑÑ‚Ð¾Ñ€Ð¾Ð½Ñ‹: " << get_side() << endl;
+			cout << "Ð”Ð¸Ð°Ð³Ð¾Ð½Ð°Ð»ÑŒ: " << get_diagonal() << endl;
 			Shape::info();
 		}
 	};
@@ -112,9 +112,9 @@ namespace Geometry
 		void info()const
 		{
 			cout << typeid(*this).name() << endl;
-			cout << "Øèðèíà: " << get_width() << endl;
-			cout << "Äëèííà: " << get_length() << endl;
-			cout << "Äèàãîíàëü: " << get_diagonal() << endl;
+			cout << "Ð¨Ð¸Ñ€Ð¸Ð½Ð°: " << get_width() << endl;
+			cout << "Ð”Ð»Ð¸Ð½Ð½Ð°: " << get_length() << endl;
+			cout << "Ð”Ð¸Ð°Ð³Ð¾Ð½Ð°Ð»ÑŒ: " << get_diagonal() << endl;
 			Shape::info();
 		}
 	};
@@ -150,8 +150,8 @@ namespace Geometry
 		void info()const
 		{
 			cout << typeid(*this).name() << endl;
-			cout << "Ðàäèóñ: " << get_radius() << endl;
-			cout << "Äèàìåòð: " << get_diametr() << endl;
+			cout << "Ð Ð°Ð´Ð¸ÑƒÑ: " << get_radius() << endl;
+			cout << "Ð”Ð¸Ð°Ð¼ÐµÑ‚Ñ€: " << get_diametr() << endl;
 			Shape::info();
 		}
 	};
@@ -188,8 +188,8 @@ namespace Geometry
 		void info()const
 		{
 			cout << typeid(*this).name() << endl;
-			cout << "Ñòîðîíà òðåóãîëüíèêà: " << get_side() << endl;
-			cout << "Âûñîòà òðåóãîëüíèêà: " << get_height() << endl;
+			cout << "Ð¡Ñ‚Ð¾Ñ€Ð¾Ð½Ð° Ñ‚Ñ€ÐµÑƒÐ³Ð¾Ð»ÑŒÐ½Ð¸ÐºÐ°: " << get_side() << endl;
+			cout << "Ð’Ñ‹ÑÐ¾Ñ‚Ð° Ñ‚Ñ€ÐµÑƒÐ³Ð¾Ð»ÑŒÐ½Ð¸ÐºÐ°: " << get_height() << endl;
 			Shape::info();
 		}
 	};
