@@ -18,11 +18,11 @@ namespace Geometry
 
 	enum Limits
 	{
-		MIN_START_X =100,
+		MIN_START_X = 100,
 		MAX_START_X = 1000,
 		MIN_START_Y = 100,
 		MAX_START_Y = 800,
-		MIN_LINE_WIDTH=1,
+		MIN_LINE_WIDTH = 1,
 		MAX_LINE_WIDTH = 30,
 
 		MIN_LENGTH = 20,
@@ -148,11 +148,11 @@ namespace Geometry
 			HBRUSH hBrush = CreateSolidBrush(color);
 			SelectObject(hdc, hPen);
 			SelectObject(hdc, hBrush);
-			::Rectangle(hdc,start_x, start_y, start_x+width,start_y + length);
+			::Rectangle(hdc, start_x, start_y, start_x + width, start_y + length);
 			DeleteObject(hPen);
 			DeleteObject(hBrush);
 			ReleaseDC(hwnd, hdc);
-			
+
 		}
 		void info()const
 		{
@@ -175,7 +175,7 @@ namespace Geometry
 	{
 		double radius;
 	public:
-		Circle(double radius, SHAPE_TAKE_PARAMETRS):Shape(SHAPE_GIVE_PATAMETRS)
+		Circle(double radius, SHAPE_TAKE_PARAMETRS) :Shape(SHAPE_GIVE_PATAMETRS)
 		{
 			set_radius(radius);
 		}
@@ -191,7 +191,7 @@ namespace Geometry
 		}
 		double get_area()const
 		{
-			return M_PI * radius*radius;
+			return M_PI * radius * radius;
 		}
 		double get_perimeter()const
 		{
@@ -262,7 +262,7 @@ namespace Geometry
 		}
 		double get_height()const
 		{
-			return sqrt(pow(side,2)-pow(side/2,2));
+			return sqrt(pow(side, 2) - pow(side / 2, 2));
 		}
 		double get_area()const
 		{
@@ -391,9 +391,9 @@ void main()
 	SetConsoleDisplayMode(hConsole, CONSOLE_FULLSCREEN_MODE, NULL);
 
 	setlocale(LC_ALL, "Rus");
-	Geometry::Square sq(50,Geometry::Color::red,300,100,5);
+	Geometry::Square sq(50, Geometry::Color::red, 300, 100, 5);
 	sq.info();
-	Geometry::Rectangle rect(250, 150,Geometry::Color::grey,500,100);
+	Geometry::Rectangle rect(250, 150, Geometry::Color::grey, 500, 100);
 	rect.info();
 	Geometry::Circle sun(150, Geometry::yellow, 800, 100);
 	sun.info();
