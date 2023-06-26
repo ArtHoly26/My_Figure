@@ -1,6 +1,8 @@
-﻿#define _USE_MATH_DEFINES
+﻿#define _CRT_SECURE_NO_WARNINGS
+#define _USE_MATH_DEFINES
 #include <Windows.h>
 #include <iostream>
+#include <math.h>
 
 using namespace std;
 
@@ -15,7 +17,6 @@ namespace Geometry
 		grey = 0x00AAAAAA,
 		white = 0x00FFFFFF,
 	};
-
 	enum Limits
 	{
 		MIN_START_X = 100,
@@ -24,21 +25,20 @@ namespace Geometry
 		MAX_START_Y = 800,
 		MIN_LINE_WIDTH = 1,
 		MAX_LINE_WIDTH = 30,
-
 		MIN_LENGTH = 20,
 		MAX_LENGTH = 800
 
 	};
 
-#define SHAPE_TAKE_PARAMETRS Color color , int start_x, int start_y, int line_width = 5
+#define SHAPE_TAKE_PARAMETRS Color color , double start_x, double start_y, int line_width 
 #define SHAPE_GIVE_PATAMETRS color, start_x, start_y, line_width
 
 	class Shape
 	{
 	protected:
 		Color color;
-		int start_x;
-		int start_y;
+		double start_x;
+		double start_y;
 		int line_width;
 
 	public:
@@ -69,13 +69,13 @@ namespace Geometry
 		{
 			this->color = color;
 		}
-		void set_start_x(int start_x)
+		void set_start_x(double start_x)
 		{
 			if (start_x < Limits::MIN_START_X) start_x = Limits::MIN_START_X;
 			if (start_x > Limits::MAX_START_X) start_x = Limits::MAX_START_X;
 			this->start_x = start_x;
 		}
-		void set_start_y(int start_y)
+		void set_start_y(double start_y)
 		{
 			if (start_y < Limits::MIN_START_Y) start_y = Limits::MIN_START_Y;
 			if (start_y > Limits::MAX_START_Y) start_y = Limits::MAX_START_Y;
@@ -89,12 +89,47 @@ namespace Geometry
 		}
 		virtual double get_area() const = 0;
 		virtual double get_perimeter()const = 0;
-		virtual void draw()const = 0;
+		virtual void draw(BOOL(*drawMethod)(HDC, int, int, int, int), double firstParam, double secondParam, int line_width, Color color)const
+		{
+			HWND hwnd = GetConsoleWindow();
+			HDC hdc = GetDC(hwnd);
+			HPEN hPen = CreatePen(PS_SOLID, line_width, color);
+			HBRUSH hBrush = CreateSolidBrush(color);
+			::SelectObject(hdc, hPen);
+			::SelectObject(hdc, hBrush);
+			drawMethod
+			(
+				hdc,
+				get_start_x(),
+				get_start_y(),
+				get_start_x() + firstParam,
+				get_start_y() + secondParam
+			);
+			::DeleteObject(hPen);
+			::DeleteObject(hBrush);
+			::ReleaseDC(hwnd, hdc);		
+		}
+		virtual void draw(BOOL(*drawMethod)(HDC, const POINT*, int), double firstParam, double secondParam, double thirdParam, int line_width, Color color)const
+		{
+			HWND hwnd = GetConsoleWindow();
+			HDC hdc = GetDC(hwnd);
+			HPEN hPen = CreatePen(PS_SOLID, line_width, color);
+			HBRUSH hBrush = CreateSolidBrush(color);
+			SelectObject(hdc, hPen);
+			SelectObject(hdc, hBrush);
+			POINT vertices[] = {
+				{get_start_x(), get_start_y() + firstParam},
+				{get_start_x() + secondParam, get_start_y() + firstParam},
+				{get_start_x() + secondParam / 2 , get_start_y() + firstParam - thirdParam} };
+			drawMethod(hdc, vertices, 3);
+			DeleteObject(hPen);
+			DeleteObject(hBrush);
+			ReleaseDC(hwnd, hdc);
+		}
 		virtual void info()const
 		{
 			cout << "Площадь фигуры: " << get_area() << endl;
 			cout << "Периметр фигуры: " << get_perimeter() << endl;
-			draw();
 		}
 	};
 
@@ -108,6 +143,7 @@ namespace Geometry
 			set_width(width);
 			set_length(length);
 		}
+		~Rectangle() {}
 		void set_width(double width)
 		{
 			if (width < MIN_LENGTH)width = MIN_LENGTH;
@@ -140,27 +176,14 @@ namespace Geometry
 		{
 			return sqrt(pow(width, 2) + pow(length, 2));
 		}
-		void draw()const
-		{
-			HWND hwnd = GetConsoleWindow();
-			HDC hdc = GetDC(hwnd);
-			HPEN hPen = CreatePen(PS_SOLID, 5, color);
-			HBRUSH hBrush = CreateSolidBrush(color);
-			SelectObject(hdc, hPen);
-			SelectObject(hdc, hBrush);
-			::Rectangle(hdc, start_x, start_y, start_x + width, start_y + length);
-			DeleteObject(hPen);
-			DeleteObject(hBrush);
-			ReleaseDC(hwnd, hdc);
-
-		}
-		void info()const
+		void info()
 		{
 			cout << typeid(*this).name() << endl;
 			cout << "Ширина: " << get_width() << endl;
 			cout << "Длинна: " << get_length() << endl;
 			cout << "Диагональ: " << get_diagonal() << endl;
 			Shape::info();
+			Shape::draw(::Rectangle, width, length, line_width, color);
 		}
 	};
 
@@ -169,6 +192,7 @@ namespace Geometry
 		double side;
 	public:
 		Square(double side, SHAPE_TAKE_PARAMETRS) :Rectangle(side, side, SHAPE_GIVE_PATAMETRS) {}
+		~Square() {}
 	};
 
 	class Circle : public Shape
@@ -201,7 +225,6 @@ namespace Geometry
 		{
 			return 2 * radius;
 		}
-
 		void draw()const
 		{
 			HWND hwnd = GetConsoleWindow();
@@ -221,7 +244,6 @@ namespace Geometry
 			ReleaseDC(hwnd, hdc);
 
 		}
-
 		void info()const
 		{
 			cout << typeid(*this).name() << endl;
@@ -234,6 +256,7 @@ namespace Geometry
 	{
 	public:
 		Triangle(SHAPE_TAKE_PARAMETRS) : Shape(SHAPE_GIVE_PATAMETRS) {};
+		~Triangle() {};
 		virtual double get_height()const = 0;
 		void info()const
 		{
@@ -250,6 +273,7 @@ namespace Geometry
 		{
 			set_side(side);
 		}
+		~EquillateralTriangle() {}
 		void set_side(double side)
 		{
 			if (side < Limits::MIN_LENGTH)side = Limits::MIN_LENGTH;
@@ -272,35 +296,12 @@ namespace Geometry
 		{
 			return side * 3;
 		}
-		void draw()const
-		{
-			HWND hwnd = GetConsoleWindow();
-			HDC hdc = GetDC(hwnd);
-			HPEN hPen = CreatePen(PS_SOLID, line_width, color);
-			HBRUSH hBrush = CreateSolidBrush(color);
-
-			SelectObject(hdc, hPen);
-			SelectObject(hdc, hBrush);
-
-			POINT vertex[] =
-			{
-				{start_x,start_y + side},
-				{start_x + side,start_y + side},
-				{start_x + side / 2,start_y + side - get_height()}
-			};
-
-			::Polygon(hdc, vertex, 3);
-
-			DeleteObject(hBrush);
-			DeleteObject(hPen);
-
-			ReleaseDC(hwnd, hdc);
-		}
-		void info()const
+		void info()
 		{
 			cout << typeid(*this).name() << endl;
 			cout << "Длинна сторны: " << get_side() << endl;
-			Triangle::info();
+			Shape::info();
+			Shape::draw(::Polygon, side, side, get_height(), line_width, color);
 		}
 	};
 
@@ -326,7 +327,6 @@ namespace Geometry
 			if (side > Limits::MAX_LENGTH) side = Limits::MAX_LENGTH;
 			this->side = side;
 		}
-
 		double get_base()const
 		{
 			return base;
@@ -335,22 +335,18 @@ namespace Geometry
 		{
 			return side;
 		}
-
 		double get_height()const
 		{
 			return sqrt(pow(side, 2) - pow(base / 2, 2));
 		}
-
 		double get_area()const
 		{
 			return base * get_height() / 2;
 		}
-
 		double get_perimeter()const
 		{
 			return base + 2 * side;
 		}
-
 		void draw()const
 		{
 			HWND hwnd = GetConsoleWindow();
@@ -374,7 +370,6 @@ namespace Geometry
 
 			ReleaseDC(hwnd, hdc);
 		}
-
 		void info()const
 		{
 			cout << typeid(*this).name() << endl;
@@ -391,14 +386,17 @@ void main()
 	SetConsoleDisplayMode(hConsole, CONSOLE_FULLSCREEN_MODE, NULL);
 
 	setlocale(LC_ALL, "Rus");
-	Geometry::Square sq(50, Geometry::Color::red, 300, 100, 5);
-	sq.info();
+	
 	Geometry::Rectangle rect(250, 150, Geometry::Color::grey, 500, 100);
 	rect.info();
-	Geometry::Circle sun(150, Geometry::yellow, 800, 100);
+
+
+	/*Geometry::Circle sun(150, Geometry::yellow, 800, 100);
 	sun.info();
 	Geometry::EquillateralTriangle eq_tri(80, Geometry::Color::green, 500, 300, 1);
 	eq_tri.info();
 	Geometry::IsoscalesTriangle iso_tri(250, 200, Geometry::Color::blue, 200, 270);
-	iso_tri.info();
+	iso_tri.info();*/
+	/*Geometry::Square sq(50, Geometry::Color::red, 300, 100, 5);
+	sq.info();*/
 }
